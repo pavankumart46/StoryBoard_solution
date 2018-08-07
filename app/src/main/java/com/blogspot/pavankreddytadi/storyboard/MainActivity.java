@@ -1,17 +1,29 @@
 package com.blogspot.pavankreddytadi.storyboard;
 
+import android.arch.lifecycle.Observer;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.arch.lifecycle.ViewModelProviders;
+import android.support.v7.widget.RecyclerView;
+
+import com.blogspot.pavankreddytadi.storyboard.room_database.StoryBoard;
+import com.blogspot.pavankreddytadi.storyboard.room_database.StoryBoardViewModel;
+
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
+    RecyclerView recyclerView;
+    StoryBoardViewModel viewModel;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -26,6 +38,17 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(new Intent(MainActivity.this,AddStories.class));
             }
         });
+
+        recyclerView = findViewById(R.id.recyclerview);
+        viewModel = ViewModelProviders.of(this).get(StoryBoardViewModel.class);
+        viewModel.getmAllStories().observe(this, new Observer<List<StoryBoard>>() {
+            @Override
+            public void onChanged(@Nullable List<StoryBoard> storyBoards) {
+                recyclerView.setAdapter(new RecyclerAdapter(MainActivity.this,storyBoards));
+                recyclerView.setLayoutManager(new LinearLayoutManager(MainActivity.this));
+            }
+        });
+
     }
 
     @Override
